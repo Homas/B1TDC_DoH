@@ -1,0 +1,52 @@
+version: '3'
+services:
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "853:853/tcp"
+      - "443:443/tcp"
+    volumes:
+      - /opt/b1tdc_doh_data/ssl:/etc/nginx/ssl:ro
+      - /opt/b1tdc_doh_data/nginx.conf:/etc/nginx/nginx.conf:ro
+      - /opt/b1tdc_doh_data/njs.d:/etc/nginx/njs.d:ro
+      - /opt/b1tdc_doh_data/nginx_log:/var/log/nginx/
+    restart: always
+    command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
+  certbot:
+    image: certbot/dns-route53
+    volumes:
+      - /opt/b1tdc_doh_data/certbot/conf:/etc/letsencrypt
+      - /opt/b1tdc_doh_data/ssl:/opt/b1tdc_doh_data/ssl
+      - /opt/b1tdc_doh_data/certbot_log:/var/log/letsencrypt
+    restart: always
+    environment:
+      - DOHDOMAIN
+      - AWS_ACCESS_KEY_ID
+      - AWS_SECRET_ACCESS_KEY
+    entrypoint: "/bin/sh -c 'trap exit TERM;if [ ! -f /opt/b1tdc_doh_data/ssl/certs/doh.pem ]; then echo \"creating new certs for $DOHDOMAIN\";certbot certonly --agree-tos --email $EMAIL --dns-route53 --dns-route53-propagation-seconds 30 -d $DOHDOMAIN -d \"*.$DOHDOMAIN\"; cp /etc/letsencrypt/live/$DOHDOMAIN/fullchain.pem /opt/b1tdc_doh_data/ssl/certs/doh.pem && cp /etc/letsencrypt/live/$DOHDOMAIN/privkey.pem /etc/nginx/ssl/private/doh.pem; fi; while :; do certbot renew --dns-route53 --dns-route53-propagation-seconds 30 && if ! cmp -s /etc/letsencrypt/live/$DOHDOMAIN/fullchain.pem /opt/b1tdc_doh_data/ssl/certs/doh.pem; then cp /etc/letsencrypt/live/$DOHDOMAIN/doh.pem /opt/b1tdc_doh_data/ssl/certs/doh.pem && cp /etc/letsencrypt/live/$DOHDOMAIN/privkey.pem /etc/nginx/ssl/private/doh.pem; fi; sleep 12h & wait $${!}; done;'"
+    
+#variables go to the .env file
+##sample .env file (you will need to remove single "#")
+#DOHDOMAIN=my-doh-server.example.com
+#AWS_ACCESS_KEY_ID
+#AWS_SECRET_ACCESS_KEY
+
+#mkdir -p /opt/b1tdc_doh_data/ssl
+#mkdir -p /opt/b1tdc_doh_data/ssl/certs
+#mkdir -p /opt/b1tdc_doh_data/ssl/private
+#mkdir -p /opt/b1tdc_doh_data/certbot_log
+#mkdir -p /opt/b1tdc_doh_data/nginx_log
+#sudo yum install docker
+#sudo systemctl enable docker
+#https://docs.docker.com/compose/install/
+#sudo curl -L "https://github.com/docker/compose/releases/download/1.27.4/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+#sudo chmod +x /usr/local/bin/docker-compose
+
+#/etc/nginx/ssl/certs/doh.pem
+#/etc/nginx/ssl/private/doh.pem
+# script with upload
+# with route53
+#
+# /usr/bin/certbot renew && if ! cmp -s /etc/letsencrypt/live/$DOMAIN/fullchain.pem /opt/b1tdc_doh_data/ssl/certs/doh.pem; then cp /etc/letsencrypt/live/$DOMAIN/doh.pem /opt/b1tdc_doh_data/ssl/certs/doh.pem && cp /etc/letsencrypt/live/$DOMAIN/privkey.pem /etc/nginx/ssl/private/doh.pem fi
+
+#if [ ! -f /opt/b1tdc_doh_data/ssl/certs/doh.pem ]; then certbot certonly --dns-route53 --dns-route53-propagation-seconds 30 -d $DOMAIN -d \"*.$DOMAIN\" fi
