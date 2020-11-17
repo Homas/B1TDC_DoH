@@ -53,6 +53,7 @@ to run the service in backgroud execute:
 sudo docker-compose up -d
 
 You also need to automatically pull new SSL certificates. You may set up a cron job to do so.
+To generate ssh certificates you may use: ssh-keygen -o
 "
 
 #crontab on secondary root host
