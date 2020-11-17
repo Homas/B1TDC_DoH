@@ -13,7 +13,5 @@ services:
       - /opt/b1tdc_doh_data/njs.d:/etc/nginx/njs.d:ro
       - /opt/b1tdc_doh_data/nginx_log:/var/log/nginx/
     restart: always
-    environment:
-      - ROOT_HOST
-    command: "/bin/sh -c 'while :; do scp -r ec2-user@$ROOT_HOST/opt/b1tdc_doh_data/ssl/certs/doh.pem /etc/nginx/ssl/certs/doh.pem && scp -r ec2-user@$ROOT_HOST/opt/b1tdc_doh_data/ssl/private/doh.pem /etc/nginx/ssl/private/doh.pem; sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
+    command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
 
