@@ -1,3 +1,4 @@
+#(c) 2020, Vadim Pavlov, ioc2rpz(at)gmail.com
 version: '3'
 services:
   nginx:
@@ -8,17 +9,11 @@ services:
     volumes:
       - /opt/b1tdc_doh_data/ssl:/etc/nginx/ssl
       - /opt/b1tdc_doh_data/nginx.conf:/etc/nginx/nginx.conf:ro
+      - /opt/b1tdc_doh_data/users.passwd:/etc/nginx/users.passwd:ro
+      - /opt/b1tdc_doh_data/njs.d:/etc/nginx/njs.d:ro
+      - /opt/b1tdc_doh_data/nginx_log:/var/log/nginx/
     restart: always
-    logging:
-      driver: syslog
-    network_mode: "bridge"
-    command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'
-#$ROOT_HOST
-#$DOMAIN
+    environment:
+      - ROOT_HOST
+    command: "/bin/sh -c 'while :; do scp -r ec2-user@$ROOT_HOST/opt/b1tdc_doh_data/ssl/certs/doh.pem /etc/nginx/ssl/certs/doh.pem && scp -r ec2-user@$ROOT_HOST/opt/b1tdc_doh_data/ssl/private/doh.pem /etc/nginx/ssl/private/doh.pem; sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
 
-# pull files via scp and key based auth
-#/etc/nginx/ssl/certs/doh.pem
-#/etc/nginx/ssl/private/doh.pem
-# if ! cmp -s /etc/letsencrypt/live/$DOHDOMAIN/fullchain.pem $DOH_ROOT/ssl/doh.crt; then cp /etc/letsencrypt/live/$HOST/fullchain.pem $DOH_ROOT/ssl/doh.crt && cp /etc/letsencrypt/live/$DOHDOMAIN/privkey.pem $DOH_ROOT/ssl/doh.key && killall -9 doh-server; fi
-# reload in the loop but for the first time we start nginx in foreground
-# 
