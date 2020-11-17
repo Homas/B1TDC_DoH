@@ -9,6 +9,9 @@ fi
 
 SYSUSER=`who am i | awk '{print $1}'`
 
+cd /opt/
+git pull https://github.com/Homas/B1TDC_DoH.git
+
 mkdir -p /opt/b1tdc_doh_data/ssl
 mkdir -p /opt/b1tdc_doh_data/ssl/certs
 mkdir -p /opt/b1tdc_doh_data/ssl/private
@@ -22,6 +25,6 @@ curl -L "https://github.com/docker/compose/releases/download/1.27.4/docker-compo
 chmod +x /usr/local/bin/docker-compose
 ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
 
-yum install httpd-tools
+yum install httpd-tools git
 
 echo "Don't forget to create .env file where you will start docker compose"
