@@ -8,7 +8,7 @@ export default {get_qname, get_response, preread_doh_request, preread_dns_reques
  * 2: As 1, but also parse answers. We can log the answers, and also cache responses in HTTP Content-Cache
  * 3: Very Verbose, log everything as above, but also write packet data to error log (slowest)
 **/
-var dns_decode_level = 3;
+var dns_decode_level = 1;
 
 /**
  * DNS Question Load Balancing

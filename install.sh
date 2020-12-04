@@ -17,7 +17,7 @@ cp -r ./B1TDC_DoH/b1tdc_doh_data /opt
 cp -r ./B1TDC_DoH/nginx /opt
 cp -r ./B1TDC_DoH/nginx-certbot /opt
 
-cp -r ./B1TDC_DoH/b1tdc_doh_data/nginx_advanced.conf /opt/nginx_advanced.conf
+cp -r ./B1TDC_DoH/b1tdc_doh_data/nginx_advanced.conf /opt/b1tdc_doh_data/nginx.conf
 
 
 mkdir -p /opt/b1tdc_doh_data/ssl
