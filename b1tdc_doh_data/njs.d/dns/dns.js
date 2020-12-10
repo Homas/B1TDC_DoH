@@ -55,6 +55,16 @@ function process_doh_request(s, decode, scrub) {
         bytes = line;
       } else if ( line.toString().startsWith("GET /dns-query?dns=") ) {
         bytes = String.bytesFrom(line.slice("GET /dns-query?dns=".length, line.length - " HTTP/1.1".length), "base64url");
+      } else if ( line.toString().startsWith("GET /dns-query?ct&dns=") ) {
+        bytes = String.bytesFrom(line.slice("GET /dns-query?ct&dns=".length, line.length - " HTTP/1.1".length), "base64url");
+      } else if ( line.toString().startsWith("GET /dns-query?ct=&dns=") ) {
+        bytes = String.bytesFrom(line.slice("GET /dns-query?ct=&dns=".length, line.length - " HTTP/1.1".length), "base64url");
+      } else if ( line.toString().startsWith("GET /dns-query-noauth?dns=") ) {
+        bytes = String.bytesFrom(line.slice("GET /dns-query-noauth?dns=".length, line.length - " HTTP/1.1".length), "base64url");
+      } else if ( line.toString().startsWith("GET /dns-query-noauth?ct&dns=") ) {
+        bytes = String.bytesFrom(line.slice("GET /dns-query-noauth?ct&dns=".length, line.length - " HTTP/1.1".length), "base64url");
+      } else if ( line.toString().startsWith("GET /dns-query-noauth?ct=&dns=") ) {
+        bytes = String.bytesFrom(line.slice("GET /dns-query-noauth?ct=&dns=".length, line.length - " HTTP/1.1".length), "base64url");
       } 
 
       if (bytes) {
